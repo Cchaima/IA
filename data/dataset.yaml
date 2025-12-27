@@ -1,0 +1,10 @@
+path: ../data  # On remonte d'un cran depuis src/
+train: images
+val: images
+names:
+  0: Trou
+  1: Tache
+  2: Couture
+  3: Pli
+  4: fil
+  5: Dformation

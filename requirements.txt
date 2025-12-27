@@ -1,8 +1,7 @@
 flask
 ultralytics
+gTTS
 opencv-python-headless
 numpy
 torch
-torchvision
-reportlab
-gtts
+pandas
