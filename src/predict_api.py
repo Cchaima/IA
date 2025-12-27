@@ -1,3 +1,10 @@
+import os
+import cv2
+from ultralytics import YOLO
+from gtts import gTTS
+from collections import Counter
+
+# --- BLOC DE CORRECTION DES IMPORTS (Azure vs Local) ---
 try:
     # Si on lance depuis la racine du projet
     from src.drift import check_drift
@@ -6,6 +13,7 @@ except ModuleNotFoundError:
     # Si on lance depuis le dossier src (comme sur Azure/Docker)
     from drift import check_drift
     from logger import log_prediction
+# -------------------------------------------------------
 
 # Chemins
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -94,7 +102,7 @@ def analyze_image(image_path):
         pass
 
     # =================================================================
-    # 🚨 MONITORING MLOps (C'est la partie que tu avais oubliée !) 🚨
+    # 🚨 MONITORING MLOps
     # =================================================================
     
     # Déterminer le statut Drift pour le log
@@ -105,7 +113,6 @@ def analyze_image(image_path):
     main_conf = 0.0
     
     if defects_details:
-        # On prend le premier défaut trouvé comme "principal"
         main_defect = defects_details[0]['name']
         main_conf = defects_details[0]['confidence']
         
