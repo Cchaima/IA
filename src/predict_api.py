@@ -3,6 +3,7 @@ import cv2
 from ultralytics import YOLO
 from gtts import gTTS
 from collections import Counter
+from src.drift import check_drift
 
 # Chemins
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +30,11 @@ except Exception as e:
     print(f"❌ Erreur modèle : {e}")
 
 def analyze_image(image_path):
+    drift_result = check_drift(image_path)
+    
+    if drift_result["status"] == "DRIFT_DETECTED":
+        # On peut choisir de bloquer ou juste d'avertir
+        print(f"⚠️ ALERTE DRIFT : {drift_result['details']}")
     if model is None:
         return {"error": "Modèle non chargé"}
 
