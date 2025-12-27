@@ -2,26 +2,174 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Test IA Textile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texelai - Contrôle Qualité IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; padding: 40px; background-color: #f0f2f5; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
-        h1 { color: #0078d4; }
-        input[type="file"] { margin: 20px 0; }
-        button { background-color: #0078d4; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #005a9e; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* Header */
+        header { background: #2c3e50; width: 100%; padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .nav-container { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        h1 { color: white; margin: 0; font-size: 1.8rem; }
+        .dashboard-btn { background: #e74c3c; color: white; text-decoration: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
+        .dashboard-btn:hover { background: #c0392b; transform: scale(1.05); }
+
+        /* Main Card */
+        .container { background: white; width: 90%; max-width: 800px; margin-top: 40px; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        
+        /* Upload Section */
+        .upload-area { border: 2px dashed #bdc3c7; padding: 40px; border-radius: 10px; cursor: pointer; transition: 0.3s; margin-bottom: 20px; }
+        .upload-area:hover { border-color: #3498db; background: #f0f8ff; }
+        input[type="file"] { display: none; }
+        .upload-label { color: #7f8c8d; font-size: 1.2rem; }
+        
+        button#analyzeBtn { background: #3498db; color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 30px; cursor: pointer; transition: 0.3s; width: 100%; font-weight: bold; }
+        button#analyzeBtn:hover { background: #2980b9; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4); }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+        /* Loader */
+        .loader { display: none; margin: 20px auto; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Results Section */
+        #resultSection { display: none; margin-top: 30px; text-align: left; border-top: 1px solid #eee; padding-top: 30px; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .result-grid { grid-template-columns: 1fr; } }
+        
+        img#resultImage { width: 100%; border-radius: 10px; border: 2px solid #eee; }
+        .report-box { background: #f8f9fa; padding: 20px; border-radius: 10px; }
+        .defect-tag { display: inline-block; padding: 5px 10px; border-radius: 15px; font-size: 0.85rem; margin-right: 5px; margin-bottom: 5px; font-weight: bold; color: white; }
+        .bg-critique { background: #e74c3c; }
+        .bg-majeur { background: #f39c12; }
+        
+        audio { width: 100%; margin-top: 15px; }
     </style>
 </head>
 <body>
+
+    <header>
+        <div class="nav-container">
+            <h1>🏭 Texelai V2.0 chaima</h1>
+            <a href="/dashboard" class="dashboard-btn" target="_blank">📊 Monitoring Admin</a>
+        </div>
+    </header>
+
     <div class="container">
-        <h1>🧵 IA Textile</h1>
-        <p>Upload une image pour tester le modèle.</p>
-        
-        <form action="/predict" method="post" enctype="multipart/form-data">
-            <input type="file" name="image" accept="image/*" required>
-            <br>
-            <button type="submit">🔍 Analyser le tissu</button>
+        <h2>Contrôle Qualité Automatisé</h2>
+        <p>Déposez une image de tissu pour lancer l'inspection par IA.</p>
+
+        <form id="uploadForm">
+            <label class="upload-area">
+                <input type="file" name="file" id="fileInput" accept="image/*" required onchange="previewFile()">
+                <div class="upload-label" id="dropLabel">📂 Cliquez ou glissez une image ici</div>
+            </label>
+            <button type="submit" id="analyzeBtn">Lancer l'Analyse</button>
         </form>
+
+        <div class="loader" id="loader"></div>
+
+        <div id="resultSection">
+            <h3>📝 Résultat de l'inspection</h3>
+            <div class="result-grid">
+                <div>
+                    <h4>Image Analysée</h4>
+                    <img id="resultImage" src="" alt="Résultat">
+                </div>
+                <div class="report-box">
+                    <h4>Rapport Technique</h4>
+                    <div id="defectsList"></div>
+                    <p id="textReport" style="line-height: 1.6; color: #555;"></p>
+                    
+                    <h4>🎧 Synthèse Vocale</h4>
+                    <audio id="audioPlayer" controls></audio>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Aperçu du nom de fichier
+        function previewFile() {
+            const fileInput = document.getElementById('fileInput');
+            const dropLabel = document.getElementById('dropLabel');
+            if(fileInput.files.length > 0) {
+                dropLabel.textContent = "✅ " + fileInput.files[0].name;
+                dropLabel.style.color = "#27ae60";
+                dropLabel.style.fontWeight = "bold";
+            }
+        }
+
+        // Gestion de l'envoi du formulaire
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // EMPÊCHE DE VOIR LE JSON BRUT
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            
+            if(fileInput.files.length === 0) return;
+
+            formData.append('file', fileInput.files[0]);
+
+            // Interface
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('analyzeBtn').innerText = "Analyse en cours...";
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+
+            try {
+                // Appel au serveur
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 1. Afficher l'image
+                    const imgUrl = '/files/' + data.data.analyzed_image;
+                    document.getElementById('resultImage').src = imgUrl;
+
+                    // 2. Afficher le texte
+                    document.getElementById('textReport').innerText = data.data.text;
+
+                    // 3. Afficher les badges de défauts
+                    const defectsDiv = document.getElementById('defectsList');
+                    defectsDiv.innerHTML = '';
+                    if(data.data.defects.length > 0) {
+                        data.data.defects.forEach(d => {
+                            const span = document.createElement('span');
+                            span.className = `defect-tag ${d.severity === 'CRITIQUE' ? 'bg-critique' : 'bg-majeur'}`;
+                            span.innerText = `${d.name} (${d.confidence}%)`;
+                            defectsDiv.appendChild(span);
+                        });
+                    } else {
+                        defectsDiv.innerHTML = '<span class="defect-tag" style="background:#27ae60">Conforme</span>';
+                    }
+
+                    // 4. Charger l'audio
+                    const audioUrl = '/files/' + data.data.audio_file;
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.load();
+
+                    // Afficher la section résultat
+                    document.getElementById('resultSection').style.display = 'block';
+                } else {
+                    alert("Erreur: " + data.error);
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Erreur de connexion au serveur.");
+            } finally {
+                // Reset Interface
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+                document.getElementById('analyzeBtn').innerText = "Lancer une nouvelle analyse";
+            }
+        });
+    </script>
 </body>
 </html>
