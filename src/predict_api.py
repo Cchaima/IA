@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 # Chemins
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "best.pt")
+MODEL_PATH = os.path.join(BASE_DIR, "model", "best.pt")
 
 # Ta base de connaissances experte
 RECOMMANDATIONS_EXPERTES = {
