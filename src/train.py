@@ -2,6 +2,7 @@ import os
 from ultralytics import YOLO
 import shutil
 import torch
+from drift import create_reference
 
 # --- CONFIGURATION DES CHEMINS (Relatifs pour que ça marche partout) ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,6 +46,8 @@ def train():
     else:
         print("❌ Erreur : L'entraînement n'a pas généré de fichier best.pt")
         exit(1)
+        # On met à jour la référence Drift
+    create_reference()
 
 if __name__ == "__main__":
     train()
