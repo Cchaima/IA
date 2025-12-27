@@ -1,10 +1,11 @@
-import os
-import cv2
-from ultralytics import YOLO
-from gtts import gTTS
-from collections import Counter
-from src.drift import check_drift
-from src.logger import log_prediction  # <--- Important
+try:
+    # Si on lance depuis la racine du projet
+    from src.drift import check_drift
+    from src.logger import log_prediction
+except ModuleNotFoundError:
+    # Si on lance depuis le dossier src (comme sur Azure/Docker)
+    from drift import check_drift
+    from logger import log_prediction
 
 # Chemins
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
