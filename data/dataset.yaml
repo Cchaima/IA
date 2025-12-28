@@ -1,6 +1,14 @@
-path: ../data  # On remonte d'un cran depuis src/
+# Chemin racine ABSOLU (Comme ça, zéro erreur possible)
+path: C:/Users/R I B/OneDrive/Bureau/IA/data
+
+# Dossiers des images (YOLO va chercher dans path/images)
 train: images
-val: images
+val: images  # On utilise les mêmes pour le test (ou images/val si tu as séparé)
+
+# Nombre de classes (Tu en as 6 dans ta liste)
+nc: 6
+
+# Noms des classes
 names:
   0: Trou
   1: Tache
