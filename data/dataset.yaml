@@ -1,18 +1,17 @@
 # Chemin racine ABSOLU (Comme ça, zéro erreur possible)
-path: C:/Users/R I B/OneDrive/Bureau/IA/data
+path: /app/data
 
 # Dossiers des images (YOLO va chercher dans path/images)
 train: images
 val: images  # On utilise les mêmes pour le test (ou images/val si tu as séparé)
 
-# Nombre de classes (Tu en as 6 dans ta liste)
-nc: 6
-
-# Noms des classes
+nc: 8
 names:
-  0: Trou
-  1: Tache
-  2: Couture
-  3: Pli
-  4: fil
-  5: Dformation
+  0: Conforme
+  1: Couture
+  2: Décoloration
+  3: Déformation
+  4: Pli
+  5: Trou
+  6: fil
+  7: tache

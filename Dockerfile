@@ -6,8 +6,7 @@ WORKDIR /app
 
 # Installe les dépendances
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
-
+RUN pip install --default-timeout=1000 --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 # Copie ton organisation propre
 COPY model/ model/
 COPY src/ src/

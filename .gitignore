@@ -1,0 +1,8 @@
+/best.pt
+runs/ 
+*.pt 
+__pycache__/ 
+venv/ 
+data/images/ 
+data/labels/ 
+model/ 
